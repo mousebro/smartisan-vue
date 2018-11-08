@@ -10,7 +10,7 @@
                     <a>
                         <div class="mask"></div>
                         <span :class="item.tagColor">{{item.msg}}</span>
-                        <img :src="item.imgUrl" alt="">
+                        <img v-lazy="item.imgUrl" alt="">
                     </a>
                     <div>
                         <h4>{{item.title}}</h4>
@@ -54,6 +54,9 @@
             background:url(http://127.0.0.1:3002/img/logo.png) no-repeat  0 .9rem;
             background-size:cover;
             width:3rem;
+        }
+        .title-bar-floor>h1.floor-contain>span:first-child{
+            font-size:.6rem;
         }
         .swipe-wrapper{
             height:10rem;

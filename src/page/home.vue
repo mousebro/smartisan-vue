@@ -1,13 +1,7 @@
 <template>
     <div class="home-contain">
         <div class="title-bar-contain">
-            <div class="headerContain">
-                <h1 class="title-bar">
-                    <a class="nav-toggle icont iconfont icon-icon-menu" ></a>
-                    <a class="nav-logo"></a>
-                    <a class="nav-search icont iconfont icon-icon-search"></a>
-                </h1>
-            </div>
+            <header-box></header-box>
             <div class="swipe-wrapper">
                 <mt-swipe :auto="4000" ref="swipeWrapper">
                     <mt-swipe-item class="swip-item-1 item">
@@ -20,7 +14,7 @@
             </div>
             <div class="short-cut-container">
                 <ul>
-                    <li>
+                    <li @click="toPhonelist">
                         <img src="http://127.0.0.1:3002/img/cut01.png">
                         <p>手机</p>
                     </li>
@@ -66,7 +60,7 @@
                                 <img src="http://127.0.0.1:3002/img/pro02.webp" alt="">
                             </li>
                             <li>
-                                <img src="http://127.0.0.1:3002/img/pro05.webp" alt="">
+                                <img src="http://127.0.0.1:3002/img/product01.webp" alt="">
                             </li>
                         </ul>
 					</div>
@@ -76,11 +70,17 @@
        <slide-box :list="list" :Floor="Floor2"></slide-box>
         <product-list :proTitle="proTitle2" :productL="productL"></product-list>
         <product-list :proTitle="proTitle3" :productL="productL"></product-list>
+        <!--净化器及其配件轮播-->
+        <purifier-box></purifier-box>
+        <footer-box></footer-box>
     </div>
 </template>
 <script>
     import slideP from "./floor/slideP.vue"
     import productL from "./floor/productL.vue"
+    import purifier from "./floor/purifier.vue"
+    import headerBox from "./../components/headerContainer.vue"
+    import footerBox from "./../components/footerContainer.vue"
     export default {
         data(){
             return{
@@ -110,11 +110,16 @@
           
         },
         methods:{
-  
+            toPhonelist(){
+                this.$router.push("/phonelist")
+            }
         },
         components:{
             "slide-box":slideP,
-            "product-list":productL
+            "product-list":productL,
+            "purifier-box":purifier,
+            "header-box":headerBox,
+            "footer-box":footerBox
             
         }
     }
@@ -125,40 +130,7 @@
         width:100%;
     }
    /*头部*/ 
-    .title-bar-contain{
-        background:#fff;
-        box-shadow: 0 5px 13px rgb(228, 228, 228);
-        padding-bottom:1rem;
-        margin-bottom:.5rem;
-       border:1px solid #ddd;
-       position: relative;
-    }
-    .headerContain{
-        position:fixed;
-        width:100%;
-        z-index: 1000;
-        top:0;
-        left:0;
-    }
-    .title-bar{
-        width:100%;
-        display: flex;
-        background: #1d1d1d;
-        justify-content: space-between;
-        line-height:2rem;
-        margin:0;
-    }
-    .title-bar>a{
-        color:#fff;
-        display: inline-block;
-        padding:1.1rem;
-    }
-    .title-bar>a:nth-child(2){
-        display: inline-block;
-        background:url(http://127.0.0.1:3002/img/logo.png) no-repeat  0 .9rem;
-        background-size:cover;
-        width:3rem;
-    }
+    
     .swipe-wrapper{
         height:10rem;
         margin-top:5rem;
@@ -210,5 +182,5 @@
     .mui-card-content .mui-card-floor2>ul>li img{
         width:10rem;
     }
-    /*新品首发*/
+
 </style>

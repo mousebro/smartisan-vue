@@ -7,7 +7,6 @@
         <div class="prodListC">
             <ul>
                 <li v-for="item in productL " :key="item.id">
-                   
                     <div class="imageContain">
                         <span :class="item.color">{{item.msg}}</span>
                         <img v-lazy="item.imgUrl" alt="">
@@ -98,11 +97,11 @@
     .prodListC>ul>li>div>.maskRed{
         line-height:0;
         display: inline-block;
-        padding:.4rem .6rem;
+        padding:.5rem .6rem;
         border-radius:.4rem;
         color:#cc3e39;
         background:#ffe7e5;
-        border-color:#f0948d;
+        border:1px solid #f0948d;
         position:absolute;
         top:.3rem;
         left:.1rem;
@@ -112,11 +111,11 @@
     .prodListC>ul>li>div>.maskYellow{
         line-height:0;
         display: inline-block;
-        padding:.4rem .6rem;
+        padding:.5rem .6rem;
         border-radius:.4rem;
         color:#e6b217;
         background:#fffbe5;
-        border-color:#ffe57a;
+        border:1px solid#ffe57a;
         position:absolute;
         top:.3rem;
         left:.1rem;
