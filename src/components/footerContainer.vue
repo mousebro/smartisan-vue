@@ -9,14 +9,14 @@
                 <span class="mui-icon mui-icon-bars"></span>
                 <span class="mui-tab-label">分类</span>
             </a>
-            <a class="mui-tab-item" >
+            <router-link to="/Cart" class="mui-tab-item" >
                 <span class="mui-icon mui-icon-extra mui-icon-extra-cart"><span class="mui-badge">9</span></span>
                 <span class="mui-tab-label">购物车</span>
-            </a>
-            <a class="mui-tab-item" >
+            </router-link>
+            <router-link to="/person" class="mui-tab-item" >
                 <span class="mui-icon mui-icon-contact"></span>
                 <span class="mui-tab-label">个人中心</span>
-            </a>
+            </router-link>
         </nav>
     </footer>
 </template>

@@ -2,10 +2,10 @@
     <div>
         <header-box :scrib="scrib"></header-box>
         <ul class="header-tag">
-            <li class="active">商品</li>
-            <li>详情</li>
-            <li>参数</li>
-            <li>推荐</li>
+            <li :class="scrollTop>=0 && scrollTop<715?'active':''" @click="toPosition(0)">商品</li>
+            <li :class="scrollTop>=715 && scrollTop<5935?'active':''" @click="toPosition(790)">详情</li>
+            <li :class="scrollTop>=5935 && scrollTop<6570?'active':''" @click="toPosition(6550)">参数</li>
+            <li :class="scrollTop>=6570 ?'active':''" @click="toPosition(7250)">推荐</li>
         </ul>
         <div class="productDetail">
             <div class="picContain">
@@ -43,6 +43,7 @@
 				</div>
             </div>
             <!--商品详情-->
+            <a href=""></a>
             <div class="mui-card pDetails pDetailsImg">
                 <div class="mui-card-header">商品详情</div>
                 <div class="mui-card-content">
@@ -70,6 +71,7 @@
             </div>
 
             <!--相关推荐-->
+            <a id="aboutpush"></a>
             <product-list-box :proTitle="proTitle2" :productL="productL"></product-list-box>
         </div>
         <div class="detaiFooter">
@@ -79,7 +81,7 @@
             <div class="addToCart" @click="addToCart">加入购物车</div>
             <div class="buyNow">现在购买</div>
         </div>
-        <add-to-cart></add-to-cart>
+        <add-to-cart class="addToCartBox"></add-to-cart>
     </div>
 </template>
 <script>
@@ -92,6 +94,7 @@
              pid:"",
              title:"" ,
              scrib:{title:"",router:"/phoneList"},
+             scrollTop:0,
              imgList:[
                 {id:1,url:"http://127.0.0.1:3002/img/d02.webp"},
                 {id:2,url:"http://127.0.0.1:3002/img/d03.webp"},
@@ -120,13 +123,23 @@
         },
         methods:{
             addToCart(){
-               
+               document.getElementsByClassName("addToCartBox")[0].style.display="block";
+            },
+            toPosition(p){
+                var h = window.innerHeight/736;
+                p=parseInt(p*h)
+                document.documentElement.scrollTop = p
             }
         },
         created() {
             var req=this.$route.query
             this.pid = req.pid;
             this.scrib.title=req.title;
+            
+            window.addEventListener("scroll",()=>{
+                this.scrollTop=document.body.scrollTop||document.documentElement.scrollTop;
+            })
+
         },
         components:{
             "header-box":pHeader,
@@ -136,6 +149,9 @@
     }
 </script>
 <style scoped>
+    .addToCartBox{
+        display: none;
+    }
     .detaiFooter>.iconContain{
         width:3rem;
         height:3rem;

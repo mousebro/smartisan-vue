@@ -97,13 +97,15 @@
     ul.listUl>li>div:last-child{
         text-align:left;
         padding-left:1rem;
+        width:60%;
     }
     ul.listUl>li>div:last-child>h4{
-        font-size:1rem;
+        font-size:.8rem;
         font-weight:700;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        line-height:1rem;
     }
     ul.listUl>li>div:last-child>p{
         padding:0;

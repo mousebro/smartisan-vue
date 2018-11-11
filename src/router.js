@@ -4,6 +4,8 @@ import home from './page/home'
 import phoneList from "./page/phone/phonelist.vue"
 import phoneDetail from "./page/phone/phoneDtail.vue"
 import Login from "./components/login.vue"
+import Person from "./page/personal.vue"
+import shoppingCart from "./page/shoppingCart.vue"
 Vue.use(Router)
 
 export default new Router({
@@ -33,6 +35,17 @@ export default new Router({
       path:"/login",
       component:Login
 
+    },
+    {
+      name:"个人中心",
+      path:"/person",
+      component:Person
+    },
+    {
+      name:"购物车",
+      path:"/Cart",
+      component:shoppingCart
     }
+
   ]
 })

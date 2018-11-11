@@ -2,8 +2,8 @@
     <div class="loginContain">
         <mt-header title="登陆官网"></mt-header>
         <div class="loginCBody">
-            <input type="text" placeholder="手机号/邮箱" autofocus>
-            <input type="text" placeholder="密码">
+            <input type="text" placeholder="手机号/邮箱" autofocus v-model="uname">
+            <input type="password" placeholder="密码" v-model="upwd">
             <div class="loginMsg">
                 <div>
                     <span :class="autoLoginClass" @click="changeStatu">✔</span>
@@ -14,8 +14,8 @@
                     <span>忘记密码</span>
                 </div>
             </div>
-            <button type="button" class="loginBtn">登录</button>
-            <p>国际手机号登录&nbsp;&nbsp;></p>
+            <button type="button" class="loginBtn" @click="toLogin">登录</button>
+            <p  >国际手机号登录&nbsp;&nbsp;></p>
             <div class="loginAnothor">
                 <a><span class="mui-icon mui-icon-weibo"></span></a>
                 <a><span class="mui-icon mui-icon-qq"></span></a>
@@ -24,11 +24,14 @@
     </div>
 </template>    
 <script>
+    import {Toast} from 'mint-ui'
     export default {
         data(){
             return{
                 autoLogin:false,
-                autoLoginClass:"loginAuto"
+                autoLoginClass:"loginAuto",
+                uname:"13456789456",
+                upwd:"123456",
             }
         },
         methods:{
@@ -41,6 +44,24 @@
                     this.autoLogin=true 
                 }
             },
+            toLogin(){
+                var reg = /^1{1}[3-9]{1}[0-9]{9}$/
+                
+                if(reg.test(this.uname)){
+                    this.$http.post("http://127.0.0.1:3002/login",{uname:this.uname,upwd:this.upwd}).then(result=>{
+                        if(result.body.code==200){
+                            this.$store.commit('login',result.body)
+                            Toast(`${result.body.msg}`)
+                            setTimeout(()=>{
+                                this.$router.push("/")
+                            },3000)
+                        }
+                    })
+
+                }else{
+                    Toast("请输入正确的用户名")
+                }
+            }
         }
     }
 </script>

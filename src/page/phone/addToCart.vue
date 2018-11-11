@@ -1,5 +1,5 @@
 <template>
-    <div class="addToCartContain">
+    <div class="addToCartContain" @click="toggleModel($event)">
         <div class="modelContain">
             <div class="modelContain-header">
                 <img src="http://127.0.0.1:3002/img/pSpecies01.webp" alt="">
@@ -7,6 +7,30 @@
                     <h4>坚果特别定制版</h4>
                     <p>炭黑色·6G+64G</p>
                     <p>&yen;1,899.00</p>
+                </div>
+            </div>
+            <div @touchstart="test1($event)" @touchmove="test2($event)" @touchend="test3($event)" class="typeChoseContain">
+                <div class="typeChose" >
+                    <h4>颜色选择</h4>
+                    <div >
+                        <span :class="pColor==1?'borderColor':''" @click="choseColor(1)"><i></i>炭黑色</span>
+                        <span :class="pColor==0?'borderColor':''" @click="choseColor(0)"><i></i>酒红色</span>
+                    </div>
+                    <h4>容量选择</h4>
+                    <div>
+                        <span  :class="pType==0?'borderColor':''" @click="choseType(0)">6G+32G</span>
+                        <span  :class="pType==1?'borderColor':''" @click="choseType(1)">6G+64G</span>
+                        <span  :class="pType==2?'borderColor':''" @click="choseType(2)">6G+128G</span>
+                    </div>
+                    <h4>数量选择</h4>
+                    <div class="changeNum">
+                        <div><span @click="prodNum">-</span><i v-cloak>{{Num}}</i><span @click="addNum">+</span></div>
+                    </div>
+                    <h4 class="addServer"><span>添加服务</span><span>保修服务介绍&nbsp;&nbsp;></span></h4>
+                    <div>
+                        <span :class="pServer==0?'borderColor':''" @click="choseServer(0)"><p>坚果Pro2意外屏碎保修服务99元/年</p><span>折算后仅需0.27元/天</span></span>
+                        <span :class="pServer==1?'borderColor':''" @click="choseServer(1)"><p>坚果Pro2延长保修服务（延保）149/年</p><span>折算后仅需0.41元/天</span></span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -20,10 +44,149 @@
 </template>
 <script>
     export default {
+        data(){
+            return{
+                x1:0,
+                x2:0,
+                x3:0,
+                x4:0,
+                h:0,
+                pColor:-1,//手机颜色
+                Num:1,//商品数量
+                pServer:-1, //服务类型
+                pType:-1//内存型号选择
+            }
+        },
+        methods:{
+            test1(e){
+               this.x1=e.touches[0].pageY;
+            },
+            test2(e){
+                var t1= document.getElementsByClassName("typeChose")[0];
+                this.h = t1.clientHeight-272
+                this.x2=e.touches[0].pageY;
+                this.x4=this.x2-this.x1+this.x3
+                this.x4>0?this.x4=0:this.x4=this.x4
+                this.x4<-this.h?this.x4=-this.h:this.x4=this.x4
+                //console.log("x2:"+x2)
+                t1.style.top= this.x4+"px";
+                t1.clientHeight
+                e.preventDefault();
+            },
+            test3(){
+                var t1= document.getElementsByClassName("typeChose")[0];
+                this.x3=t1.offsetTop;
+                
+            },
+            toggleModel(e){
+                if(e.target==document.getElementsByClassName("addToCartContain")[0]){
+                    document.getElementsByClassName("addToCartContain")[0].style.display="none";
+                }
+                
+            },
+            choseColor(a){//颜色选择
+                this.pColor=a
+            },
+            prodNum(){ //数量减
+                this.Num<=1?this.Num=1:this.Num--
+            },
+            addNum(){ //数量加
+                this.Num>49?this.Num=50:this.Num++
+            },
+            choseServer(a){
+                this.pServer=a
+            },
+            choseType(a){
+                this.pType=a
+            }
 
+        }
     }
 </script>
 <style scoped>
+
+    .typeChoseContain{
+        height:20rem;
+        position: relative;
+        overflow: hidden
+    }
+    .typeChose{
+        text-align: left;
+        position: absolute;
+        width:100%;
+    }
+    .typeChose>div:last-child{
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .typeChose>div:last-child>span{
+        width: 100%;
+        display: inline-block;
+        margin-bottom: .5rem;
+    }
+    .typeChose>div:last-child>span>p:first-child{
+        color:#000;
+        font-size:.8rem;
+    }
+    .typeChose>div:last-child>span>span:last-child{
+        color:#ccc;
+    }
+    .typeChose>h4{
+        font-size:.8rem;
+        font-weight:700;
+        padding:1rem;
+        border-bottom:1px solid #ddd;
+    }
+    .typeChose>h4.addServer{
+        display: flex;
+        justify-content: space-between;
+       
+    }
+    .typeChose>h4.addServer>span:last-child{
+        color:#808080;
+    }
+    .typeChose>div{
+        display: flex;
+        justify-content: flex-start;
+        padding:1rem;
+        border-bottom:1px solid #ddd;
+    }
+    .typeChose>div.changeNum>div>span{
+        display: inline-block;
+        width:18px;
+        height:18px;
+        text-align: center;
+        color:#808080;
+        border-radius:9px;
+        background:linear-gradient(to top,#ddd,#fff);
+        box-shadow: 0 0 3px #808080;
+
+    }
+    .typeChose>div.changeNum>div>i{
+        display: inline-block;
+        margin:0 1rem;
+    }
+    .typeChose>div>span{
+        display: inline-block;
+        padding:.4rem 1.5rem;
+        font-size:.5rem;
+        border:1px solid #ddd;
+        border-radius:.3rem;
+        margin-right:1rem;
+        text-align: center;
+    }
+    .typeChose>div>span>i{
+        display: block;
+        width:18px;
+        height:18px;
+        background:#333333;
+        border-radius:18px;
+        margin-bottom:.3rem;
+        margin-left:.3rem;
+    }
+    .typeChose>div>span:last-child>i{
+        background:#722b35;
+    }
     .addToCartContain>.modelContain{
         height:60%;
         width:100%;
@@ -51,6 +214,7 @@
     }
     .addToCartContain>.modelContain>.modelContain-header>div>h4{
         font-weight:700;
+        font-size:.8rem;
     }
     .addToCartContain>.modelContain>.modelContain-header>div>p:nth-child(2){
         font-size:.6rem;
@@ -61,12 +225,12 @@
         color:#d44d44;
         font-weight: 700;
     }
-    detaiFooter{
+    .detaiFooter{
         box-shadow: 0 0 2px #808080;
     }
     .detaiFooter>.iconContain{
-        width:3rem;
-        height:3rem;
+        width:2.5rem;
+        height:2.5rem;
        position: relative;
         background-size:contain !important; 
     }
@@ -114,7 +278,7 @@
     .addToCartContain>.detaiFooter>div.buyNow{
         width:80%;
         border:1px solid #f0f0f0;
-        line-height:2.5rem;
+        line-height:3rem;
         font-size:.8rem;
         font-weight:700;
         border-radius:.4rem;
@@ -126,5 +290,8 @@
     .addToCartContain>.detaiFooter>div.buyNow{
         background:linear-gradient(to bottom,#6084ec,#506cbb);
         color:#fff;
+    }
+    .borderColor{
+        border:1px solid #506cbb !important;
     }
 </style>

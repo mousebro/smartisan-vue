@@ -3,20 +3,21 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 const state= {
-  count:3
+  islogin:false,
+  userName:"",
+  avator:"",
+  uid:null
 }
 const mutations={
-  add(state){
-    state.count++
-  },
-  reduce(state){
-    state.count--
+  login:function(state,res){
+    state.islogin = true;
+    state.userName = res.uname;
+    state.avator = res.avator;
+    state.uid = res.uid
   }
 }
 const getters = {
-  count:function(){
-    return state.count+=100
-  }
+
 }
 
 export default new Vuex.Store({

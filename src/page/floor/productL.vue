@@ -105,7 +105,7 @@
         position:absolute;
         top:.3rem;
         left:.1rem;
-        z-index:120;
+    
         font-size:.3rem;
     }
     .prodListC>ul>li>div>.maskYellow{
@@ -119,7 +119,7 @@
         position:absolute;
         top:.3rem;
         left:.1rem;
-        z-index:120;
+
         font-size:.3rem;
     }
     .prodListC>ul>li>div img[lazy="loading"]{

@@ -38,7 +38,7 @@
             </div>
 
         </div>
-         <slide-box :list="list" :Floor="Floor1"></slide-box>
+         <slide-box :list="list" :Floor="Floor1" :index="0"></slide-box>
         <div class="mui-card title-bar-contain ">
 				<div class="mui-card-header">11月20日&nbsp;限时秒杀</div>
 				<div class="mui-card-content">
@@ -67,7 +67,7 @@
                 </div>
         </div>
         <product-list :proTitle="proTitle" :productL="productL"></product-list>
-       <slide-box :list="list" :Floor="Floor2"></slide-box>
+       <slide-box :list="list" :Floor="Floor2" :index="1"></slide-box>
         <product-list :proTitle="proTitle2" :productL="productL"></product-list>
         <product-list :proTitle="proTitle3" :productL="productL"></product-list>
         <!--净化器及其配件轮播-->

@@ -6,7 +6,7 @@ var pool = mysql.createPool({
     port:3306,
     user:"root",
     password:"",
-    database:"xz",
+    database:"chuizi",
     connectionLimit:20    //活动连接数量
 })
 //3:导出对象

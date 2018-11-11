@@ -5,32 +5,79 @@
                 <span>{{Floor}}</span>
                 <span class="icont iconfont icon-xiayige"></span>
             </h1>
-            <ul class="floor-contain-list" >
-                <li v-for="item in list" :key="item.id" >
-                    <a>
-                        <div class="mask"></div>
-                        <span :class="item.tagColor">{{item.msg}}</span>
-                        <img v-lazy="item.imgUrl" alt="">
-                    </a>
-                    <div>
-                        <h4>{{item.title}}</h4>
-                        <p>{{item.subTitle}}</p>
-                        <p><i>&yen;</i><span>{{item.price}}</span><del>{{item.oldPrice}}</del></p>
-                    </div>
-                </li>
-            </ul>
+            <div class="slideContain">
+                <ul class="floor-contain-list"  @touchstart="test1($event)"  @touchmove="test2($event,index)" @touchend="test3($event,index)" >
+                    <li v-for="item in list" :key="item.id" >
+                        <a>
+                            <div class="mask"></div>
+                            <span :class="item.tagColor">{{item.msg}}</span>
+                            <img v-lazy="item.imgUrl" alt="">
+                        </a>
+                        <div>
+                            <h4>{{item.title}}</h4>
+                            <p>{{item.subTitle}}</p>
+                            <p><i>&yen;</i><span>{{item.price}}</span><del>{{item.oldPrice}}</del></p>
+                        </div>
+                    </li>
+                   
+                </ul>
+                <div style="clear:both"></div>
+            </div>
         </div>
     </div>
 </template>
 <script>
     export default {
-        props:["list","Floor"],
-        created() {
-           
+        props:["list","Floor","index"],
+        data(){
+            return{
+                x1:0,
+                x2:0,
+                x3:0,
+                x4:0,
+                h:0,
+                wid:0
+            }
+        },
+        methods:{
+            test1(e){
+               this.x1=e.touches[0].pageX;
+               e.preventDefault();
+            },
+            test2(e,index){
+                var t1= document.getElementsByClassName("floor-contain-list")[index];
+                this.h = t1.clientWidth-this.wid
+                this.x2=e.touches[0].pageX;
+                this.x4=this.x2-this.x1+this.x3
+                this.x4>0?this.x4=0:this.x4=this.x4
+                this.x4<-this.h?this.x4=-this.h:this.x4=this.x4
+                //console.log("x2:"+x2)
+                t1.style.left= this.x4+"px";
+                this.wid =document.getElementsByClassName("slideContain")[0].clientWidth
+                
+            },
+            test3(e,index){
+                var t1= document.getElementsByClassName("floor-contain-list")[index];
+                this.x3=t1.offsetLeft;
+            },
+            toggleModel(){
+                document.getElementsByClassName("addToCartContain")[0].style.display="none";
+            }
+        },
+        mounted() {
+            var floor = document.getElementsByClassName("floor-contain-list");
+            for(var i=0;i<floor.length; i++){
+                floor[i].style.width=(this.list.length+1)*128+"px";
+            }
+         
         },
     }
 </script>
 <style scoped>
+        .slideContain{
+            position: relative;
+            height:15rem;overflow: hidden;
+        }
         .title-bar-contain{
             background:#fff;
             box-shadow: 0 5px 13px rgb(228, 228, 228);
@@ -92,12 +139,11 @@
             overflow: hidden;
         }
         .floor-contain-list{
-            display: flex;
-            flex-wrap: nowrap;
-    
+            position: absolute;
+            height:15rem;
         }
         .floor-contain-list>li{
-            position: relative;
+            float: left;
             margin:.5rem;
         }
         .floor-contain-list>li>a{
@@ -139,6 +185,7 @@
         }
         .floor-contain-list>li>div{
             position: relative;
+            margin-top:1rem;
         }
         .floor-contain-list>li>div>h4{
           font-weight:bold;
