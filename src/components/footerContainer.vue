@@ -10,7 +10,7 @@
                 <span class="mui-tab-label">分类</span>
             </a>
             <router-link to="/Cart" class="mui-tab-item" >
-                <span class="mui-icon mui-icon-extra mui-icon-extra-cart"><span class="mui-badge">9</span></span>
+                <span class="mui-icon mui-icon-extra mui-icon-extra-cart"><span class="mui-badge">{{count}}</span></span>
                 <span class="mui-tab-label">购物车</span>
             </router-link>
             <router-link to="/person" class="mui-tab-item" >
@@ -25,11 +25,15 @@
         name:"footerContainer",
         data(){
             return{
-                choice:3
+                choice:3,
+                count:0
             }
         },
         methods:{
 
+        },
+        mounted() {
+            this.count = this.$store.state.shoppingCartCount   
         }
     }
 </script>

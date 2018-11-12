@@ -6,7 +6,8 @@ const state= {
   islogin:false,
   userName:"",
   avator:"",
-  uid:null
+  uid:null,
+  shoppingCartCount:0
 }
 const mutations={
   login:function(state,res){
@@ -14,6 +15,9 @@ const mutations={
     state.userName = res.uname;
     state.avator = res.avator;
     state.uid = res.uid
+  },
+  changeCartCount:function(state,count){
+    state.shoppingCartCount=count
   }
 }
 const getters = {

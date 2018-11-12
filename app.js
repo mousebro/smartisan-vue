@@ -3,18 +3,18 @@
 const express = require("express");
 const pool  = require("./pool");
 const bodyParser = require("body-parser")
-const cookieParser = require("cookie-parser")
-const session = require("express-session")
+//const cookieParser = require("cookie-parser")
+//const session = require("express-session")
 //2:创建express对象
 var app = express();
 app.set('trust proxy',1);
-app.use(session({
-  secret: 'qq',
-  resave: false,
-  saveUninitialized: true,
-  cookie: {}
-}));
-app.use(cookieParser())
+// app.use(session({
+//   secret: 'qq',
+//   resave: false,
+//   saveUninitialized: true,
+//   cookie: {}
+// }));
+//app.use(cookieParser())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}))
 //服务器node.js 允许跨域访问配置项
@@ -50,6 +50,26 @@ app.post("/login",(req,res)=>{
 app.get("/loginout",(req,res)=>{
 
   res.send("fdsafd")
+})
+app.get("/islogin",(req,res)=>{
+  res.writeHead(200);
+  if(req.session.uid===undefined){
+    res.write(JSON.stringify({ok:0}))
+    res.end()
+  }else{
+    var uid=req.session.uid;
+    var sql=
+     "select * from xz_user where uid=?"
+    pool.query(sql,[uid],(err,result)=>{
+      if(err) console.log(err);
+      var user=result[0];
+      res.write(JSON.stringify({
+        ok:1,uname:user.uname
+      }))
+      res.end()
+    })
+  }
+  
 })
 //4:绑定监听端口
 app.listen(3002);

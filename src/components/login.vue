@@ -114,7 +114,7 @@
     }
     .loginCBody>.loginMsg>div:first-child>span:first-child{
         display: inline-block;
-        padding:1px 6px ;
+        padding:0 6px ;
         background:linear-gradient(to bottom,#709fd6,#5887bf);
         border-radius:10px;
         color:#fff;
