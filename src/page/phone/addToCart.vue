@@ -2,25 +2,23 @@
     <div class="addToCartContain" @click="toggleModel($event)">
         <div class="modelContain">
             <div class="modelContain-header">
-                <img src="http://127.0.0.1:3002/img/pSpecies01.webp" alt="">
+                <img :src="product.imgUrl" alt="">
                 <div>
-                    <h4>坚果特别定制版</h4>
-                    <p>炭黑色·6G+64G</p>
-                    <p>&yen;1,899.00</p>
+                    <h4>{{product.title}}</h4>
+                    <p>{{choseColored}}·{{chosesized}}</p>
+                    <p>&yen;{{price}}</p>
                 </div>
             </div>
             <div @touchstart="test1($event)" @touchmove="test2($event)" @touchend="test3($event)" class="typeChoseContain">
                 <div class="typeChose" >
                     <h4>颜色选择</h4>
                     <div >
-                        <span :class="pColor==1?'borderColor':''" @click="choseColor(1)"><i></i>炭黑色</span>
-                        <span :class="pColor==0?'borderColor':''" @click="choseColor(0)"><i></i>酒红色</span>
+                        <span v-for="item in color" :key='item.cid' :class="pColor==item.cid?'borderColor':''" @click="choseColor(item.cid)"><i :class="item.bg"></i>{{item.bg | colorText}}</span>
+                        <!--<span :class="pColor==0?'borderColor':''" @click="choseColor(0)"><i></i>酒红色</span>-->
                     </div>
                     <h4>容量选择</h4>
                     <div>
-                        <span  :class="pType==0?'borderColor':''" @click="choseType(0)">6G+32G</span>
-                        <span  :class="pType==1?'borderColor':''" @click="choseType(1)">6G+64G</span>
-                        <span  :class="pType==2?'borderColor':''" @click="choseType(2)">6G+128G</span>
+                        <span v-for="(item,i) in size" :key="item.sid" :class="pType==size[i].sid?'borderColor':''" @click="choseType(size[i].sid)">{{item.size}}</span>
                     </div>
                     <h4>数量选择</h4>
                     <div class="changeNum">
@@ -36,13 +34,14 @@
         </div>
         <div class="detaiFooter">
             <div class="iconContain" style="background:url(http://127.0.0.1:3002/img/sCart.png)" >
-                <span>9</span>
+                <span @click="toSCart">{{pCartCount}}</span>
             </div>
-            <div class="buyNow">确认</div>
+            <div class="buyNow" @click="comfirmeAdd">确认</div>
         </div>
     </div>
 </template>
 <script>
+    
     export default {
         data(){
             return{
@@ -54,9 +53,17 @@
                 pColor:-1,//手机颜色
                 Num:1,//商品数量
                 pServer:-1, //服务类型
-                pType:-1//内存型号选择
+                pType:-1,//内存型号选择
+                product:[],
+                size:[],
+                color:[],
+                choseColored:"炭黑色",
+                chosesized:"6G+128G",
+                price:0,
+                pCartCount:0
             }
         },
+        props:["pid"],
         methods:{
             test1(e){
                this.x1=e.touches[0].pageY;
@@ -98,9 +105,53 @@
             },
             choseType(a){
                 this.pType=a
+            },
+            //根据商品id获取商品数据
+            getProduct(){
+                this.$http.get("http://127.0.0.1:3002/product?pid="+this.pid).then(result=>{
+                    this.product = result.body.msg.product
+                    this.size = result.body.msg.size
+                    this.color = result.body.msg.color
+                    this.price = this.product.price.toFixed(2);
+                    this.$store.commit("productDetail",this.product)
+                })
+            },
+            //点击购物车图标进行跳转
+            toSCart(){
+                if(this.$store.state.islogin){
+                    this.$router.push("/Cart")
+                }else{
+                     this.$router.push("/login?router=/phoneList/detail")
+                }
+           
+            },  
+            comfirmeAdd(){
+                if(this.$store.state.islogin){
+                    this.$http.post("http://127.0.0.1:3002/updateCart",{
+                        userid:this.$store.state.uid,
+                        pCid:this.pid,
+                        pCount:this.Num,
+                        pColor:this.choseColored,
+                        psize:this.chosesized
+                    }).then(result=>{
+                       var res = result.body
+                        if(res.code==201 || res.code==202){
+                            var obj = {code:1,pCount:this.Num}
+                            this.$emit("changeMsg",obj)
+                        }
+                    })
+                }else{
+                    this.$router.push("/login?router="+this.$route.path+"&&pid="+this.pid)
+                }
+               
             }
 
-        }
+        },
+        created() {
+            this.getProduct()
+            this.pCartCount = this.$store.state.shoppingCartCount
+          
+        },
     }
 </script>
 <style scoped>
@@ -148,6 +199,7 @@
     .typeChose>div{
         display: flex;
         justify-content: flex-start;
+        flex-wrap: wrap;
         padding:1rem;
         border-bottom:1px solid #ddd;
     }
@@ -173,19 +225,31 @@
         border:1px solid #ddd;
         border-radius:.3rem;
         margin-right:1rem;
+        margin-bottom:1rem;
         text-align: center;
     }
     .typeChose>div>span>i{
         display: block;
         width:18px;
         height:18px;
-        background:#333333;
         border-radius:18px;
         margin-bottom:.3rem;
         margin-left:.3rem;
     }
-    .typeChose>div>span:last-child>i{
+    .typeChose>div>span>i.red{
         background:#722b35;
+    }
+    .typeChose>div>span>i.blue{
+        background:#332b72;
+    }
+    .typeChose>div>span>i.yellow{
+        background:#f7ad3c;
+    }
+    .typeChose>div>span>i.black{
+        background:#333333;
+    }
+    .typeChose>div>span>i.green{
+        background:#55eaa7;
     }
     .addToCartContain>.modelContain{
         height:60%;

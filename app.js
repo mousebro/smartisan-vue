@@ -41,7 +41,20 @@ app.post("/login",(req,res)=>{
    result = JSON.stringify(result)
    result = JSON.parse(result)
     if(result[0].c>0){
-      res.send({uid:result[0].uid,uname:uname,avator:result[0].avator,msg:"登录成功",code:200})
+      var uid = result[0].uid
+      var avator = result[0].avator
+      var sql = `select pCount from shoppingCart where userid=?`
+      pool.query(sql,uid,(err,result)=>{//请求用户购物车中的商品数量
+        if(err) throw err;
+        result = JSON.stringify(result)
+        result = JSON.parse(result)
+        var count=0;
+        for(var i in result){
+          count+=result[i].pCount
+        }
+        res.send({uid:uid,uname:uname,avator:avator,pcount:count,msg:"登录成功",code:200})
+      })
+     
     }else{
       res.send({code:-1,msg:"登录失败,请检查用户名和密码"})
     }
@@ -70,6 +83,89 @@ app.get("/islogin",(req,res)=>{
     })
   }
   
+})
+app.get("/getproduct",(req,res)=>{
+  var uid = req.query.uid
+ var sql = `SELECT * FROM shoppingcart INNER JOIN product ON pCid = pid WHERE userid =?`
+ pool.query(sql,uid,(err,result)=>{
+   if(err) throw err;
+   res.send(result)
+ })
+})
+//商品详情页，根据商品id来获取商品的详细信息
+app.get("/product",(req,res)=>{
+  var pid = req.query.pid
+  var sql1 = `select * from product where pid=?`
+  var sql2 = `select * from psize where sPid=?`
+  var sql3 = `select * from pcolor where pcid=?`
+  pool.query(sql1,pid,(err,result)=>{
+    if(err) throw err;
+    if(result.length>0){
+      var product = result[0]
+      pool.query(sql2,pid,(err,result)=>{
+        if(err) throw err;
+        if(result.length>=0){
+          var size=result
+          pool.query(sql3,pid,(err,result)=>{
+            if(err) throw err;
+            if(result.length>=0){
+              var color=result
+              res.send({code:200,msg:{product:product,size:size,color:color}})
+            }
+          })
+        }
+      })
+    }
+  })
+})
+//跟新用户购物车列表
+app.post("/updateCart",(req,res)=>{
+  var obj = req.body
+  var userid = obj.userid;
+  var pCid = obj.pCid;
+  var pColor = obj.pColor;
+  var pCount = obj.pCount;
+  var psize = obj.psize;
+  var sql = `SELECT count(pCid) as c,pCount from shoppingCart where userid=? AND pCid=?`;
+  pool.query(sql,[userid,pCid],(err,result)=>{
+    if(err) throw err;
+    if(result[0].c>0){
+      var count=result[0].pCount
+      pCount+=count
+      var sql2 = `UPDATE shoppingCart SET pCount=? ,psize=?,pColor=? WHERE pCid=? AND userid=?`;
+      pool.query(sql2,[pCount,psize,pColor,pCid,userid],(err,result)=>{
+        if(err) throw err;
+        if(result.affectedRows>0){
+          res.send({code:201,msg:"添加修改成功"})
+        }
+      })
+    }else{
+      var sql3 = `INSERT INTO shoppingCart(userid,pCid,pColor,pCount,psize) VALUES(?,?,?,?,?)`;
+      pool.query(sql3,[userid,pCid,pColor,pCount,psize],(err,result)=>{
+        if(err) throw err;
+        if(result.affectedRows>0){
+          res.send({code:202,msg:"添加成功"})
+        }
+      })
+    }
+  })
+})
+app.post("/delateCart",(req,res)=>{
+    var query = req.body.list
+    var sql = `DELETE FROM shoppingCart WHERE `
+    for(var i in query){
+      if(i==0){
+        sql+=` cid=?`
+      }else{
+        sql+=` or cid=?`
+      }
+    }
+    pool.query(sql,query,(err,result)=>{
+      if(err) throw err;
+      if(result.affectedRows>0){
+        res.send({code:1,msg:"删除成功"})
+      }
+    })
 })
 //4:绑定监听端口
 app.listen(3002);

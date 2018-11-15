@@ -7,7 +7,10 @@ const state= {
   userName:"",
   avator:"",
   uid:null,
-  shoppingCartCount:0
+  shoppingCartCount:0,
+  cartPlist:[],
+  productDetail:[],
+  pid:null,
 }
 const mutations={
   login:function(state,res){
@@ -18,6 +21,18 @@ const mutations={
   },
   changeCartCount:function(state,count){
     state.shoppingCartCount=count
+  },
+  changeuid:function(state,uid){
+    state.uid=uid
+  },
+  cartplist:function(state,list){
+     state.cartplist = list
+  },
+  productDetail:function(state,detail){
+    state.productDetail = detail
+  },
+  changepid:function(state,pid){
+    state.pid = pid
   }
 }
 const getters = {

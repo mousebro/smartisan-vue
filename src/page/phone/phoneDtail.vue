@@ -9,7 +9,7 @@
         </ul>
         <div class="productDetail">
             <div class="picContain">
-                <img src="http://127.0.0.1:3002/img/d01.webp" alt="">
+                <img :src="productDetail.imgUrl" alt="">
             </div>
             <!--商品信息-->
             <div class="mui-card pDetails">
@@ -75,16 +75,17 @@
             <product-list-box :proTitle="proTitle2" :productL="productL"></product-list-box>
         </div>
         <div class="detaiFooter">
-                <div class="iconContain" style="background:url(http://127.0.0.1:3002/img/sCart.png)" >
-                    <span>9</span>
+                <div class="iconContain" style="background:url(img/sCart.png)" >
+                    <span @click="toSCart">{{sCartCount}}</span>
                 </div>
             <div class="addToCart" @click="addToCart">加入购物车</div>
             <div class="buyNow">现在购买</div>
         </div>
-        <add-to-cart class="addToCartBox"></add-to-cart>
+        <add-to-cart class="addToCartBox" :pid="pid" v-on:changeMsg="onChange"></add-to-cart>
     </div>
 </template>
 <script>
+    import {Toast} from "mint-ui"
     import addToCart from "./addToCart.vue"
     import productL from "./../floor/productL.vue"
     import pHeader from "./plistHeader.vue"
@@ -95,6 +96,9 @@
              title:"" ,
              scrib:{title:"",router:"/phoneList"},
              scrollTop:0,
+             sCartCount:0,
+             productDetail:[],
+             isshow:true,
              imgList:[
                 {id:1,url:"http://127.0.0.1:3002/img/d02.webp"},
                 {id:2,url:"http://127.0.0.1:3002/img/d03.webp"},
@@ -129,17 +133,43 @@
                 var h = window.innerHeight/736;
                 p=parseInt(p*h)
                 document.documentElement.scrollTop = p
+            },
+            toSCart(){
+                    if(this.$store.state.islogin){
+                        this.$router.push("/Cart")
+                    }else{
+                         this.$router.push("/login?router=/phoneList/detail&pid="+this.pid)
+                    }
+            },
+            getProduct(){
+                this.$http.get("http://127.0.0.1:3002/product?pid="+this.pid).then(result=>{
+                    this.productDetail = result.body.msg.product
+                })
+            },
+            onChange(obj){
+                var count = this.$store.state.shoppingCartCount
+               
+               this.sCartCount=count+obj.pCount
+                if(obj.code==1){
+                    document.getElementsByClassName("addToCartBox")[0].style.display = "none"
+                    Toast("添加购物车成功")
+                }                
             }
+
         },
         created() {
             var req=this.$route.query
             this.pid = req.pid;
             this.scrib.title=req.title;
-            
             window.addEventListener("scroll",()=>{
                 this.scrollTop=document.body.scrollTop||document.documentElement.scrollTop;
             })
-
+            this.sCartCount = this.$store.state.shoppingCartCount
+            //获取当前访问商品详情信息
+            this.getProduct()
+        },
+        updated() {
+            this.$store.commit("changeCartCount",this.sCartCount)
         },
         components:{
             "header-box":pHeader,

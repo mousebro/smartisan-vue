@@ -32,6 +32,8 @@
                 autoLoginClass:"loginAuto",
                 uname:"13456789456",
                 upwd:"123456",
+                router:"/",
+                pid:""
             }
         },
         methods:{
@@ -46,14 +48,15 @@
             },
             toLogin(){
                 var reg = /^1{1}[3-9]{1}[0-9]{9}$/
-                
                 if(reg.test(this.uname)){
                     this.$http.post("http://127.0.0.1:3002/login",{uname:this.uname,upwd:this.upwd}).then(result=>{
                         if(result.body.code==200){
                             this.$store.commit('login',result.body)
+                            this.$store.commit("changeCartCount",result.body.pcount)
+                            this.$store.commit("changeuid",result.body.uid)
                             Toast(`${result.body.msg}`)
                             setTimeout(()=>{
-                                this.$router.push("/")
+                                this.$router.push(this.router+"?pid="+this.pid)
                             },3000)
                         }
                     })
@@ -62,6 +65,15 @@
                     Toast("请输入正确的用户名")
                 }
             }
+        },
+        created() {
+            if(this.$route.query.router!=undefined){
+                this.router=this.$route.query.router
+                if(this.$route.query.pid!=undefined){
+                    this.pid=this.$route.query.pid
+                }
+            }
+              
         }
     }
 </script>

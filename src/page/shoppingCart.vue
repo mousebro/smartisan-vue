@@ -28,17 +28,17 @@
                                 <ul class="listUl">
                                     <li >
                                         <div>
-                                            <span :class="item.isSelectd==true?'loginAuto':'loginUnAuto'" @click.stop.prevent="oprationD($event,i)">✔</span>
-                                            <img :src="item.imgurl" alt="">
+                                            <span :class="item.isSelectd==true?'loginAuto':'loginUnAuto'" @click.stop.prevent="oprationD($event,i,item.cid)">✔</span>
+                                            <img :src="item.imgUrl" alt="">
                                         </div>
                                         <div>
                                             <h4>{{item.title}}</h4>
                                             <p>{{item.scrib}}</p>
                                             <p v-if="operation">
-                                                <span>&yen;{{item.price.toFixed(2)}}</span><span>x</span><span>{{item.count}}</span>
+                                                <span>&yen;{{item.price.toFixed(2)}}</span><span>x</span><span>{{item.pCount}}</span>
                                             </p>
                                             <p v-else>
-                                                <span class="changecount"><span @click="prodNum(i)">-</span><i v-cloak>{{item.count}}</i><span @click="addNum(i)">+</span></span>        
+                                                <span class="changecount"><span @click="prodNum(i)">-</span><i v-cloak>{{item.pCount}}</i><span @click="addNum(i)">+</span></span>        
                                                 <span>&yen;{{item.price.toFixed(2)}}</span>
                                             </p>
                                         </div>
@@ -76,12 +76,12 @@
                             <span>已选 <i>{{selectCount}}</i> 件</span>
                         </div>
                         <div class="delChose">
-                            <button :class="wantTod?'toDeleteP':''">删除所选</button>
+                            <button :class="wantTod?'toDeleteP':''" @click="deleteProduct">删除所选</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <footer-box></footer-box>
+            <footer-box :selectCount="selectCount" :countAll="countAll"></footer-box>
         </div>
     </template>
     <script>
@@ -102,12 +102,13 @@
                             ],
                      select:[],   
                      operation:true,
-                     cartPlist:[{pid:1,count:1,price:1299.00,scrib:"酒红色，4G+32G·全网通",title:"坚果3",imgurl:"http://127.0.0.1:3002/img/plist02.webp",isSelectd:false},{pid:2,count:2,price:2299.00,scrib:"墨黑色，6G+64G·全网通",title:"坚果Pro",imgurl:"http://127.0.0.1:3002/img/plist01.webp",isSelectd:false}],
+                     cartPlist:[],
                      totalPrice:0,
                      allSelect:false,
                      selectCount:0,
-                     wantTod:false
-                     
+                     wantTod:false,
+                     wantTodList:[],
+                     countAll:0
                 }
                 
             },
@@ -116,42 +117,64 @@
                 "product-list":productL
             },
             methods:{
-                toLogin(){
-                    this.$router.push("/login")
+                toLogin(){//未登陆时跳转到登陆页面
+                    this.$router.push("/login?router=Cart")
                 },
-                changeOperation(){
+                changeOperation(){//完成按钮和操作按钮之间转换
                     this.operation = !this.operation
 
                 },
-                addNum(i){
+                addNum(i){//增加数量
                     if(this.cartPlist[i].count==4){
                         Toast("最多购买四台")
                     }else{
-                        this.cartPlist[i].count++
+                        this.cartPlist[i].pCount++
+                        if(this.cartPlist[i].isSelectd){this.selectCount++}
+                        this.totalPrice+=this.cartPlist[i].price
+                        this.$store.commit("changeCartCount",this.selectCount) //更新Vuex -- state 
                     }
                 },
-                prodNum(i){
-                    if(this.cartPlist[i].count>=2){
-                        this.cartPlist[i].count-- 
+                prodNum(i){//减少数量
+                    if(this.cartPlist[i].pCount>=2){
+                        this.cartPlist[i].pCount-- 
+                        if(this.cartPlist[i].isSelectd){this.selectCount--}
+                        this.totalPrice-=this.cartPlist[i].price
+                        this.$store.commit("changeCartCount",this.selectCount)
                     }
                 },
-                oprationD(e,i){
+                oprationD(e,i,cid){//勾选操作
                     this.cartPlist[i].isSelectd=!this.cartPlist[i].isSelectd
                    if(this.cartPlist[i].isSelectd){
-                        this.totalPrice += (this.cartPlist[i].price) *(this.cartPlist[i].count)
-                       this.selectCount+=this.cartPlist[i].count
+                        this.totalPrice += (this.cartPlist[i].price) *(this.cartPlist[i].pCount)
+                       this.selectCount+=this.cartPlist[i].pCount
                        this.wantTod = true
+                       var has = false
+                       for(var k in this.wantTodList){ //往购物车列表中添加商品订单
+                        if(this.wantTodList[k]==cid){
+                            has=true
+                        }
+                       }
+                       if(!has){this.wantTodList.push(cid)}
                    }else{
-                        this.totalPrice -= (this.cartPlist[i].price) *(this.cartPlist[i].count)
-                        this.selectCount-=this.cartPlist[i].count
+                        this.totalPrice -= (this.cartPlist[i].price) *(this.cartPlist[i].pCount)
+                        this.selectCount-=this.cartPlist[i].pCount
+                        for(var l in this.wantTodList){ //往购物车列表中添加商品订单
+                            if(this.wantTodList[l]==cid){
+                                this.wantTodList.splice(l,1)
+                            }
+                        }
                    }
                    var state = true
+                   var state2 = false
                    for(var j =0;j<this.cartPlist.length;j++){
                         state = this.cartPlist[j].isSelectd && state
-                        this.allSelect=state                   
+                        state2 = this.cartPlist[j].isSelectd || state2 //是否删除操作
+                        this.allSelect=state   
+                        this.wantTod=state2                      
                    }
+                   this.$store.commit("changeCartCount",this.selectCount)
                 },
-                allSelectchange(){
+                allSelectchange(){//全选操作
                     if(this.allSelect){
                         this.allSelect = !this.allSelect;
                         this.totalPrice = 0
@@ -169,17 +192,53 @@
                            this.cartPlist[k].isSelectd = true
                         }
                     }
+                    this.$store.commit("changeCartCount",this.selectCount)
+                },
+                //用户选中购物车窗口时获取数据
+                getShopCartData(){
+                    var uid = this.$store.state.uid;
+                    if(!uid){return;}
+                    this.$http.get("http://127.0.0.1:3002/getproduct?uid="+uid).then(result=>{
+                        for(var i in result.body){
+                            result.body[i].isSelectd = false;
+                        }
+                        this.cartPlist = result.body;
+                        var count = 0; //将购物车列表中商品数量
+                        for(var k in this.cartPlist){
+                            count += this.cartPlist[k].pCount
+                        }
+                        this.countAll = count
+                        this.$store.commit("changeCartCount",count)
+                        this.$store.commit("cartplist",result.body)
+                        this.selectCount = 0
+                    })
+                },
+                //删除购物车中选中项
+                deleteProduct(){
+                    if(this.wantTod){
+                        this.$http.post("http://127.0.0.1:3002/delateCart?",{list:this.wantTodList}).then(result=>{
+                           Toast(result.body.msg)
+                           this.getShopCartData()
+                        })
+                    }
                 }
-                
+               
             },
             created() {
+                this.getShopCartData()
                 this.islogin=!this.$store.state.islogin;
-                var count = this.cartPlist.length
-                this.$store.commit("changeCartCount",count)
+               this.cartPlist=this.$store.state.cartPlist
+               for(var item of this.cartPlist){ //设置进入该页面时默认不选中
+                    item.isSelectd = false
+               }
+                
             },
             mounted() {
-
-            }  
+               
+            },
+            updated() {
+              
+            }
         }
     </script>
     <style scoped>
@@ -200,7 +259,7 @@
             }
             span.changecount>i{
                 display: inline-block;
-                margin:0 .5rem;
+                margin:0 1.5rem;
             }
             span.changecount~span{
                 font-size:.75rem;
@@ -333,7 +392,7 @@
             }
             .personServerContain>.listUl>li>div:last-child>p{
                 font-size:8px;
-                margin:0;
+                margin:1rem 0 0 0;
             }
             .personServerContain>.listUl>li>div:last-child>p:last-child>span{
                 display: inline-block;

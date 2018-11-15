@@ -29,11 +29,17 @@
                 count:0
             }
         },
+        props:["selectCount","countAll"],
         methods:{
 
         },
-        mounted() {
-            this.count = this.$store.state.shoppingCartCount   
+        created() {
+            this.count= this.$store.state.shoppingCartCount
+        },
+        updated(){
+            this.count = this.selectCount;
+            this.count = this.countAll
+           
         }
     }
 </script>
